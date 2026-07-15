@@ -1,36 +1,46 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import appConfig from './config/app.config';
+import { BullModule } from '@nestjs/bullmq';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
-import { envValidationSchema } from './config/env.validation';
+import appConfig from './config/app.config';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
+    // 1. Inicializa o módulo de configuração globalmente
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig, databaseConfig],
-      validationSchema: envValidationSchema,
-      validationOptions: { allowUnknown: true, abortEarly: false },
+      envFilePath: '.env',
     }),
+
+    // 2. Conectando de forma assíncrona e segura ao PostgreSQL
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      inject: [databaseConfig.KEY],
-      useFactory: (dbConfig: ConfigType<typeof databaseConfig>) => ({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: dbConfig.host,
-        port: dbConfig.port,
-        username: dbConfig.username,
-        password: dbConfig.password,
-        database: dbConfig.name,
+        host: configService.get<string>('DB_HOST') || 'db',
+        port: configService.get<number>('DB_PORT') || 5432,
+        username: configService.get<string>('DB_USERNAME') || 'streamtube_user',
+        password: configService.get<string>('DB_PASSWORD') || 'streamtube_password',
+        database: configService.get<string>('DB_DATABASE') || 'streamtube',
         autoLoadEntities: true,
-        synchronize: false,
+        synchronize: true, // Ideal para ambiente de desenvolvimento
       }),
     }),
+
+    // 3. Configura a fila (Redis)
+    BullModule.forRoot({
+      connection: {
+        host: 'queue',
+        port: 6379,
+      },
+    }),
+
+    // 4. Seus módulos de negócio
+    VideosModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
