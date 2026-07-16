@@ -24,7 +24,8 @@ import { VideosModule } from './videos/videos.module';
         host: configService.get<string>('DB_HOST') || 'db',
         port: configService.get<number>('DB_PORT') || 5432,
         username: configService.get<string>('DB_USERNAME') || 'streamtube_user',
-        password: configService.get<string>('DB_PASSWORD') || 'streamtube_password',
+        password:
+          configService.get<string>('DB_PASSWORD') || 'streamtube_password',
         database: configService.get<string>('DB_DATABASE') || 'streamtube',
         autoLoadEntities: true,
         synchronize: true, // Ideal para ambiente de desenvolvimento

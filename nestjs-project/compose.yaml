@@ -69,6 +69,26 @@ services:
     networks:
       - nestjs-network
 
+# Video Processing Worker
+  nestjs-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: nestjs-project-worker-1
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      queue:
+        condition: service_started
+      storage:
+        condition: service_started
+    networks:
+      - nestjs-network
+
 volumes:
   pgdata:
 

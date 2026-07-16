@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+} from 'typeorm';
 
 export enum VideoStatus {
   DRAFT = 'draft',
@@ -29,10 +36,20 @@ export class Video {
   })
   status: VideoStatus;
 
-  @Column({ name: 'video_storage_key', type: 'varchar', length: 512, nullable: true })
+  @Column({
+    name: 'video_storage_key',
+    type: 'varchar',
+    length: 512,
+    nullable: true,
+  })
   videoStorageKey: string;
 
-  @Column({ name: 'thumbnail_storage_key', type: 'varchar', length: 512, nullable: true })
+  @Column({
+    name: 'thumbnail_storage_key',
+    type: 'varchar',
+    length: 512,
+    nullable: true,
+  })
   thumbnailStorageKey: string;
 
   @Column({ type: 'int', nullable: true })

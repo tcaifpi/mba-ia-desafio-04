@@ -24,13 +24,17 @@ export class StorageService implements OnModuleInit {
     });
   }
 
+  // Método Getter para expor o client ao VideosService
+  getS3Client(): S3Client {
+    return this.s3Client;
+  }
+
   async onModuleInit() {
     try {
       await this.s3Client.send(
         new HeadBucketCommand({ Bucket: this.bucketName }),
       );
     } catch {
-      // Omitir a variável no catch resolve o erro de 'defined but never used'
       await this.s3Client.send(
         new CreateBucketCommand({ Bucket: this.bucketName }),
       );
@@ -43,10 +47,9 @@ export class StorageService implements OnModuleInit {
       Key: videoStorageKey,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const urlPromise = getSignedUrl(this.s3Client, command, {
       expiresIn: 3600,
-    }) as Promise<string>;
+    });
     return await urlPromise;
   }
 }

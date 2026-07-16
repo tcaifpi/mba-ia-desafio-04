@@ -13,7 +13,7 @@ export class QueueService {
       {
         attempts: 3,
         backoff: 5000,
-      }
+      },
     );
   }
 }
