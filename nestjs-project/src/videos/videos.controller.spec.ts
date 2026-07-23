@@ -66,13 +66,6 @@ describe('VideosController', () => {
     it('deve responder com status 206 Partial Content quando o header Range for enviado', async () => {
       const mockStream = new Readable();
       mockStream._read = () => {};
-      jest.spyOn(mockStream, 'pipe').mockImplementation(() => mockStream);
-
-      mockVideosService.getVideoStream.mockResolvedValue({
-        stream: mockStream,
-        contentType: 'video/mp4',
-        fileSize: 1000,
-      });
 
       const mockStatus = jest.fn();
       const mockSetHeader = jest.fn();
@@ -83,6 +76,16 @@ describe('VideosController', () => {
         setHeader: mockSetHeader,
         end: mockEnd,
       } as unknown as Response;
+
+      jest
+        .spyOn(mockStream, 'pipe')
+        .mockReturnValue(res as unknown as NodeJS.WritableStream);
+
+      mockVideosService.getVideoStream.mockResolvedValue({
+        stream: mockStream,
+        contentType: 'video/mp4',
+        fileSize: 1000,
+      });
 
       mockStatus.mockImplementation(() => res);
 

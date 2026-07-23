@@ -48,10 +48,8 @@ export class VideosService {
     video.status = VideoStatus.PROCESSING;
     await this.videoRepository.save(video);
 
-    await this.queueService.addVideoProcessJob({
-      videoId: video.id,
-      videoStorageKey: video.videoStorageKey,
-    });
+    // ✅ Como deve ser (passando 2 argumentos separados):
+    await this.queueService.addVideoProcessJob(video.id, video.videoStorageKey);
 
     return {
       message:
